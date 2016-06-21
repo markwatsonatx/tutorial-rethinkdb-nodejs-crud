@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RethinkDB Intro</title>
+  </head>
+  <body>
+    <p>
+    <% for (var i=0; i<games.length; i++) { %>
+        Game <%=(i+1)%>: <%=games[i].status%><br>    
+    <% } %>
+    </p>
+    <p>
+        <form method="post" action="/create">
+            <input type="submit">
+        </form>
+    </p>
+  </body>
+</html>
