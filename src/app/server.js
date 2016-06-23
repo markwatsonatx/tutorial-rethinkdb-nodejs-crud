@@ -54,6 +54,7 @@ app.get('/update', function(req, res) {
         });
 });
 
+// form submits
 app.post('/create', function(req, res) {
     gameController.createGame(req)
         .then(function() {
@@ -61,7 +62,6 @@ app.post('/create', function(req, res) {
         });
 });
 
-// form submits
 app.post('/update', function(req, res) {
     gameController.updateGame(req)
         .then(function() {
