@@ -1,54 +1,42 @@
 var Promise = require('bluebird');
 var r = require('rethinkdb');
 
-module.exports.createDatabase = function(conn, databaseName) {
-    return r.dbList().run(conn).then(function(list) {
-        var dbFound = false;
-        for (var i=0; i<list.length; i++) {
-          if (list[i] == databaseName) {
-            dbFound = true;
-            break;
-          }
-        }
-        if (! dbFound) {
-            console.log('Creating database...');
-            return r.dbCreate(databaseName).run(conn);
-        }
-        else {
-            console.log('Database exists.');
-            return Promise.resolve({dbs_exists:true});
-        }
-    });
-};
-
-module.exports.createTable = function(conn, tableName) {
-    return r.tableList().run(conn).then(function(list) {
-        var tableFound = false;
-        for (var i=0; i<list.length; i++) {
-          if (list[i] == tableName) {
-            tableFound = true;
-            break;
-          }
-        }
-        if (! tableFound) {
-            console.log('Creating table...');
-            return r.tableCreate(tableName).run(conn);
-        }
-        else {
-            console.log('Table exists.');
-            return Promise.resolve({table_exists:true});
-        }
-    });
-};
-
 module.exports.getGames = function(req) {
-    var conn = req.app.get('rdbConn');
-    return r.table('games').run(conn).then(function(cursor) {
-        return cursor.toArray();
-    });
+	var conn = req.app.get('rethinkdb.conn');
+	return r.table('games').run(conn).then(function(cursor) {
+		return cursor.toArray();
+	});
+};
+
+module.exports.getGameById = function(req) {
+	var conn = req.app.get('rethinkdb.conn');
+	var id = req.query.id;
+	return r.table('games').get(id).run(conn);
 };
 
 module.exports.createGame = function(req) {
-    var conn = req.app.get('rdbConn');
-    return r.table('games').insert({status:'Awaiting Player 2'}).run(conn);
+	var conn = req.app.get('rethinkdb.conn');
+	var game = {
+		player1: req.body.game.player1,
+		player2: req.body.game.player2,
+		status: req.body.game.status
+	}
+	return r.table('games').insert(game).run(conn);
+};
+
+module.exports.updateGame = function(req) {
+	var conn = req.app.get('rethinkdb.conn');
+	var id = req.body.game.id;
+	var game = {
+		player1: req.body.game.player1,
+		player2: req.body.game.player2,
+		status: req.body.game.status
+	}
+	return r.table('games').get(id).update(game).run(conn);
+};
+
+module.exports.deleteGame = function(req) {
+	var conn = req.app.get('rethinkdb.conn');
+	var id = req.body.game.id;
+	return r.table('games').get(id).delete().run(conn);
 };

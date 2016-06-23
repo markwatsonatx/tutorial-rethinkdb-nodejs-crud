@@ -1,6 +1,8 @@
-var config = require('./config.js');
+var bodyParser = require('body-parser');
+var config = require('./config');
+var databaseController = require('./controllers/databaseController');
 var express = require('express');
-var gameController = require('./controllers/gameController.js');
+var gameController = require('./controllers/gameController');
 var r = require('rethinkdb');
 
 var app = express();
@@ -12,10 +14,10 @@ var app = express();
         }
         else {
             console.log('Connected.');
-            app.set('rdbConn', conn);
-            gameController.createDatabase(conn, config.rethinkdb.db)
+            app.set('rethinkdb.conn', conn);
+            databaseController.createDatabase(conn, config.rethinkdb.db)
                 .then(function() {
-                    return gameController.createTable(conn, 'games');
+                    return databaseController.createTable(conn, 'games');
                 })
                 .catch(function(err) {
                     console.log('Error creating database and/or table: ' + err);
@@ -23,6 +25,11 @@ var app = express();
         }
     });
 })(app);
+
+// set body parser for form data
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 // set view engine and map views directory
 app.set('views', __dirname + '/views');
@@ -36,6 +43,17 @@ app.get('/', function(req, res) {
         });
 });
 
+app.get('/create', function(req, res) {
+    res.render('create', {});
+});
+
+app.get('/update', function(req, res) {
+    gameController.getGameById(req)
+        .then(function(game) {
+            res.render('update', {game: game});
+        });
+});
+
 app.post('/create', function(req, res) {
     gameController.createGame(req)
         .then(function() {
@@ -43,6 +61,7 @@ app.post('/create', function(req, res) {
         });
 });
 
+// form submits
 app.post('/update', function(req, res) {
     gameController.updateGame(req)
         .then(function() {

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Update Game</title>
+	</head>
+	<body>
+		<h1>Update Game:</h1>
+		<form method="post" action="/update">
+			<input type="hidden" name="game[id]" value="<%=game.id%>">
+			<p>Player 1: <input type="text" name="game[player1]" value="<%=game.player1%>"></p>
+			<p>Player 2: <input type="text" name="game[player2]" value="<%=game.player2%>"></p>
+			<p>Status: 
+				<select name="game[status]" value="<%=game.status%>">
+					<option value="Ready">Ready</option>
+					<option value="Started">Started</option>
+					<option value="Finished">Finished</option>
+				</select> 
+			</p>
+			<p><input type="submit" value="Update"></p>
+		</form>
+		<form method="post" action="/delete">
+			<input type="hidden" name="game[id]" value="<%=game.id%>">
+			<input type="submit" value="Delete">
+		</form>
+	</body>
+</html>

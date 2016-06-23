@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Create New Game</title>
+	</head>
+	<body>
+		<h1>Create New Game:</h1>
+		<form method="post" action="/create">
+        	<p>Player 1: <input type="text" name="game[player1]"></p>
+        	<p>Player 2: <input type="text" name="game[player2]"></p>
+			<p>Status: 
+				<select name="game[status]">
+					<option value="Ready">Ready</option>
+					<option value="Started">Started</option>
+					<option value="Finished">Finished</option>
+				</select> 
+			</p>
+            <p><input type="submit" value="Submit"></p>
+        </form>
+	</body>
+</html>
