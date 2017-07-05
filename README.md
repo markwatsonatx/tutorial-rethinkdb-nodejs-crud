@@ -1,4 +1,4 @@
-###RethinkDB CRUD example using Node.js and Docker Compose
+### RethinkDB CRUD example using Node.js and Docker Compose
 
 This repository contains a simple Node.js app that shows you how to perform CRUD operations on RethinkDB.
 

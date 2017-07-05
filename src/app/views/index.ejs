@@ -2,15 +2,17 @@
 <html>
 	<head>
 		<title>RethinkDB CRUD Example</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/app.css">
 	</head>
 	<body>
-		<h1>Games:</h1>
+		<h2>Games:</h2>
 		<table border="1" cellspacing="0">
 			<tr>
-				<td>Player 1</td>
-				<td>Player 2</td>
-				<td>Status</td>
-				<td></td>
+				<th>Player 1</th>
+				<th>Player 2</th>
+				<th>Status</th>
+				<th></th>
 			</tr>
 			<% for (var i=0; i<games.length; i++) { %>
 			<tr>
@@ -21,6 +23,6 @@
 			</tr>   
 			<% } %>
 		</table>
-		<p><a href="/create">Create New Game</a></p>
+		<br /><a href="/create">Create New Game</a>
 	</body>
 </html>

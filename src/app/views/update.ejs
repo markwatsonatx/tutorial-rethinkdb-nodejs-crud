@@ -2,9 +2,11 @@
 <html>
 	<head>
 		<title>Update Game</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/app.css">
 	</head>
 	<body>
-		<h1>Update Game:</h1>
+		<h2>Update Game:</h2>
 		<form method="post" action="/update">
 			<input type="hidden" name="game[id]" value="<%=game.id%>">
 			<p>Player 1: <input type="text" name="game[player1]" value="<%=game.player1%>"></p>

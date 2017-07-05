@@ -1,14 +1,20 @@
-var bodyParser = require('body-parser');
-var config = require('./config');
-var databaseController = require('./controllers/databaseController');
-var express = require('express');
-var gameController = require('./controllers/gameController');
-var r = require('rethinkdb');
+const bodyParser = require('body-parser');
+const cfenv = require('cfenv');
+const config = require('./config');
+const express = require('express');
+const r = require('rethinkdb');
+const DatabaseController = require('./controllers/databaseController');
+const GameController = require('./controllers/gameController');
 
-var app = express();
+const appEnv = cfenv.getAppEnv();
+const app = express();
+const http = require('http').Server(app);
+
+const databaseController = new DatabaseController();
+const gameController = new GameController();
 
 (function(app) {
-    r.connect(config.rethinkdb, function(err, conn) {
+    r.connect(config.rethinkdb, (err, conn) => {
         if (err) {
             console.log('Could not open a connection to initialize the database: ' + err.message);
         }
@@ -16,10 +22,10 @@ var app = express();
             console.log('Connected.');
             app.set('rethinkdb.conn', conn);
             databaseController.createDatabase(conn, config.rethinkdb.db)
-                .then(function() {
+                .then(() => {
                     return databaseController.createTable(conn, 'games');
                 })
-                .catch(function(err) {
+                .catch((err) => {
                     console.log('Error creating database and/or table: ' + err);
                 })
         }
@@ -31,52 +37,58 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+// serve the files out of ./public as our main files
+app.use(express.static(__dirname + '/public'));
+
 // set view engine and map views directory
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 // map requests
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
     gameController.getGames(req)
-        .then(function(games) {
+        .then((games) => {
             res.render('index', {games: games});
         });
 });
 
-app.get('/create', function(req, res) {
+app.get('/create', (req, res) => {
     res.render('create', {});
 });
 
-app.get('/update', function(req, res) {
+app.get('/update', (req, res) => {
     gameController.getGameById(req)
-        .then(function(game) {
+        .then((game) => {
             res.render('update', {game: game});
         });
 });
 
 // form submits
-app.post('/create', function(req, res) {
+app.post('/create', (req, res) => {
     gameController.createGame(req)
-        .then(function() {
+        .then(() => {
             res.redirect("/");
         });
 });
 
-app.post('/update', function(req, res) {
+app.post('/update', (req, res) => {
     gameController.updateGame(req)
-        .then(function() {
+        .then(() => {
             res.redirect("/");
         });
 });
 
-app.post('/delete', function(req, res) {
+app.post('/delete', (req, res) => {
     gameController.deleteGame(req)
-        .then(function() {
+        .then(() => {
             res.redirect("/");
         });
 });
 
-// start server on the specified port and binding host
-app.listen(config.express.port, '0.0.0.0', function() {
-  console.log("Server started.")
+// get the app environment from Cloud Foundry
+const port = appEnv.isLocal ? 3000 : appEnv.port;
+const hostname = appEnv.isLocal ? '0.0.0.0' : appEnv.bind;;
+
+http.listen(port, hostname, () => {
+	console.log(`Server started on ${hostname}:${port}.`)
 });
